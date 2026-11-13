@@ -9,6 +9,7 @@ public class Grid {
     {10, 0}, {11, 0}, {11, 1}, {10, 2}, {11, 2}, {11, 3}, {11, 4}, {11, 5}, {10, 6}, {11, 6},
     {0, 7}, {1, 7}, {2, 7}, {9, 7}, {10, 7}, {11, 7}
   };
+  private final int[][] VESSELCOORDS = {{0, 4}};
 
   public Grid(int rows, int cols) {
     this.rows = rows;
@@ -16,6 +17,7 @@ public class Grid {
     array = generateClean(rows, cols);
     generate(OILCOORDS, Cell.Status.OIL);
     generate(SHORECOORDS, Cell.Status.SHORE);
+    generate(VESSELCOORDS, Cell.Status.VESSEL);
   }
 
   private Cell[][] generateClean(int rows, int cols) {
