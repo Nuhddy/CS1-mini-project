@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Grid {
   private int rows;
   private int cols;
@@ -10,6 +12,7 @@ public class Grid {
     {0, 7}, {1, 7}, {2, 7}, {9, 7}, {10, 7}, {11, 7}
   };
   private final int[][] VESSELCOORDS = {{0, 4}};
+  private final int ROCKNUMBER = 6;
 
   public Grid(int rows, int cols) {
     this.rows = rows;
@@ -18,6 +21,7 @@ public class Grid {
     generate(OILCOORDS, Cell.Status.OIL);
     generate(SHORECOORDS, Cell.Status.SHORE);
     generate(VESSELCOORDS, Cell.Status.VESSEL);
+    generateRandom(rows, cols, ROCKNUMBER, Cell.Status.CLEAN, Cell.Status.ROCK);
   }
 
   private Cell[][] generateClean(int rows, int cols) {
@@ -33,6 +37,21 @@ public class Grid {
   private Cell[][] generate(int[][] coords, Cell.Status status) {
     for (int[] i : coords) {
       array[i[1]][i[0]].setStatus(status);
+    }
+    return array;
+  }
+
+  private Cell[][] generateRandom(
+      int rows, int cols, int success, Cell.Status targetStatus, Cell.Status status) {
+    Random random = new Random();
+    int s = 0;
+    while (s < success) {
+      int r = random.nextInt(rows);
+      int c = random.nextInt(cols);
+      if (array[r][c].getStatus() == targetStatus) {
+        array[r][c] = new Cell(status);
+        s++;
+      }
     }
     return array;
   }
