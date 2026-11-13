@@ -16,6 +16,34 @@ public class Cell {
   }
 
   public String toString() {
-    return status.toString();
+    String s = "";
+    switch (status) {
+      case Status.CLEAN:
+        s = "~";
+        break;
+      case Status.OIL:
+        s = "O";
+        break;
+      case Status.SHORE:
+        s = "S";
+        break;
+      case Status.BARRIER:
+        s = "#";
+        break;
+      case Status.VESSEL:
+        s = "V";
+        break;
+      case Status.ROCK:
+        s = "R";
+        break;
+      case Status.OILEDSHORE:
+        s = "X";
+        break;
+    }
+    return s;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
   }
 }
