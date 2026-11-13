@@ -43,7 +43,19 @@ public class Cell {
     return s;
   }
 
+  public Cell.Status getStatus() {
+    return this.status;
+  }
+
   public void setStatus(Status status) {
     this.status = status;
+  }
+
+  public boolean equals(Cell cell) {
+    if (cell.getStatus() == this.status) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
