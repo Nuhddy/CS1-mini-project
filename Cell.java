@@ -1,7 +1,21 @@
 public class Cell {
-  private String type;
+  public enum Status {
+    CLEAN,
+    OIL,
+    SHORE,
+    BARRIER,
+    VESSEL,
+    ROCK,
+    OILEDSHORE
+  }
 
-  public Cell(String type) {
-    this.type = type;
+  private Status status;
+
+  public Cell(Status status) {
+    this.status = status;
+  }
+
+  public String toString() {
+    return status.toString();
   }
 }
