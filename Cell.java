@@ -6,7 +6,7 @@ public class Cell {
     BARRIER,
     VESSEL,
     ROCK,
-    OILEDSHORE
+    OILEDSHORE,
   }
 
   private Status status;
@@ -15,6 +15,27 @@ public class Cell {
     this.status = status;
   }
 
+  public Cell() {
+    this(Status.CLEAN);
+  }
+
+  public Status getStatus() {
+    return this.status;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
+  public boolean equals(Cell cell) {
+    if (cell.getStatus() == this.status) {
+      return true;
+    }
+
+    return false;
+  }
+
+  @Override
   public String toString() {
     String s = "";
     switch (status) {
@@ -41,21 +62,5 @@ public class Cell {
         break;
     }
     return s;
-  }
-
-  public Cell.Status getStatus() {
-    return this.status;
-  }
-
-  public void setStatus(Status status) {
-    this.status = status;
-  }
-
-  public boolean equals(Cell cell) {
-    if (cell.getStatus() == this.status) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }

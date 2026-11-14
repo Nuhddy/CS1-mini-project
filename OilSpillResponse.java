@@ -1,9 +1,6 @@
 public class OilSpillResponse {
   public static void main(String[] args) {
-    Grid grid = new Grid(8, 12);
+    Grid grid = new Grid();
     System.out.println(grid);
-
-    Cell cell = new Cell(Cell.Status.OIL);
-    System.out.println(cell);
   }
 }
