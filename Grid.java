@@ -73,9 +73,12 @@ public class Grid {
     return array;
   }
 
+  public Direction getCurrent() {
+    return current;
+  }
+
   @Override
   public String toString() {
-    // board
     String s = "  ";
 
     // x coords
@@ -93,11 +96,6 @@ public class Grid {
       s += "\n";
     }
 
-    // round info
-    s += String.format("Current: %s", current.name().toLowerCase());
-
     return s;
   }
-
-  public void update() {}
 }
