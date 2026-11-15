@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Game {
@@ -39,8 +40,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-        "Vessel at (%d,%d), oil collected: %d",
-        grid.getVesselCoords()[0], grid.getVesselCoords()[1], oilCollected);
+      "Vessel at (%d,%d), oil collected: %d",
+      grid.getVesselCoords()[0], grid.getVesselCoords()[1], oilCollected);
     System.out.println();
   }
 
@@ -83,7 +84,6 @@ public class Game {
     }
   }
 
-  // TODO: implement
   private void sailVessel() {
     Grid.Direction dir = null;
     int dist = 0;
@@ -134,9 +134,72 @@ public class Game {
     }
 
     // move vessel
+    int factorX = 0;
+    int factorY = 0;
+    switch (dir) {
+      case Grid.Direction.NORTH:
+        factorY = -1;
+        break;
+      case Grid.Direction.EAST:
+        factorX = 1;
+        break;
+      case Grid.Direction.SOUTH:
+        factorY = 1;
+        break;
+      case Grid.Direction.WEST:
+        factorX = -1;
+        break;
+    }
+    int[] oldCoords = grid.getVesselCoords();
+    int[] newCoords = new int[2];
 
+    for (int i = 0; i < dist; i++) {
+      newCoords[0] = oldCoords[0] + factorX;
+      newCoords[1] = oldCoords[1] + factorY;
+      try {
+        if (grid.isObstacle(newCoords)) {
+          Cell.Status cand = grid.getGrid()[newCoords[1]][newCoords[0]].getStatus();
+          System.out.printf("Sailed %d of %d field(s) to avoid %s.\n", i, dist, cand.name().toLowerCase());
+          break;
+        }
+      } catch (ArrayIndexOutOfBoundsException e) {
+        System.out.printf("Sailed %d of %d field(s) to stay within bounds.\n", i, dist);
+        break;
+      }
+      grid.setGrid(oldCoords[1], oldCoords[0], Cell.Status.CLEAN);
+      grid.setVessel(newCoords);
+      oldCoords = Arrays.copyOf(newCoords, 2);
+    }
 
     // skim oil
+    int[] vessel = grid.getVesselCoords();
+    int[][] cands = new int[4][2];
+    int oilSkimmed = 0;
+
+    cands[0][0] = vessel[0] - 1;
+    cands[0][1] = vessel[1];
+
+    cands[1][0] = vessel[0] + 1;
+    cands[1][1] = vessel[1];
+
+    cands[2][0] = vessel[0];
+    cands[2][1] = vessel[1] - 1;
+
+    cands[3][0] = vessel[0];
+    cands[3][1] = vessel[1] + 1;
+
+    for (int[] i : cands) {
+      try {
+        if (grid.getGrid()[i[1]][i[0]].getStatus() == Cell.Status.OIL) {
+          grid.setGrid(i[1], i[0], Cell.Status.CLEAN);
+          oilSkimmed++;
+        }
+      } catch (ArrayIndexOutOfBoundsException e) {}
+    }
+
+    oilCollected += oilSkimmed;
+
+    System.out.printf("The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], oilSkimmed);
   }
 
   public void run() {

@@ -11,11 +11,12 @@ public class Grid {
   private final int ROWS;
   private final int COLS;
   private final Direction CURRENT;
-  private Cell[][] array;
 
-  private final int[][] OIL_COORDS;
-  private final int[][] SHORE_COORDS;
-  private final int[] VESSEL_COORDS;
+  private Cell[][] array;
+  private int[] vesselCoords;
+  private int[][] oilCoords;
+  private int[][] shoreCoords;
+
   private final int N_ROCKS;
   public static final String RESET = "\u001B[0m";
   public static final String BLACK = "\u001B[30m";
@@ -37,23 +38,24 @@ public class Grid {
   public static final String WHITE_BACKGROUND = "\u001B[47m";
 
   public Grid(
-      int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks) {
+    int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks
+  ) {
     if (rows < 8 || rows > 99 || cols < 12 || cols > 99) {
       throw new ArithmeticException(
-          String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
+        String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
     }
 
     this.ROWS = rows;
     this.COLS = cols;
     this.CURRENT = Direction.EAST;
-    this.OIL_COORDS = oilCoords;
-    this.SHORE_COORDS = shoreCoords;
-    this.VESSEL_COORDS = vesselCoords;
+    this.oilCoords = oilCoords;
+    this.shoreCoords = shoreCoords;
+    this.vesselCoords = vesselCoords;
     this.N_ROCKS = nRocks;
     array = generateClean(rows, cols);
-    generate(OIL_COORDS, Cell.Status.OIL);
-    generate(SHORE_COORDS, Cell.Status.SHORE);
-    generate(VESSEL_COORDS, Cell.Status.VESSEL);
+    generate(oilCoords, Cell.Status.OIL);
+    generate(shoreCoords, Cell.Status.SHORE);
+    generate(vesselCoords, Cell.Status.VESSEL);
     generateRandom(N_ROCKS, Cell.Status.CLEAN, Cell.Status.ROCK);
   }
 
@@ -91,16 +93,35 @@ public class Grid {
     return array;
   }
 
+  public boolean isObstacle(int[] coords) {
+    Cell.Status status = array[coords[1]][coords[0]].getStatus();
+    if (status == Cell.Status.SHORE || status == Cell.Status.BARRIER ||
+        status == Cell.Status.ROCK || status == Cell.Status.OILEDSHORE) {
+      return true;
+    }
+
+    return false;
+  }
+
   public Direction getCurrent() {
     return CURRENT;
   }
 
   public int[][] getOilCoords() {
-    return OIL_COORDS;
+    return oilCoords;
   }
 
   public int[] getVesselCoords() {
-    return VESSEL_COORDS;
+    return vesselCoords;
+  }
+
+  public void setVessel(int[] coords) {
+    this.vesselCoords = coords;
+    setGrid(coords[1], coords[0], Cell.Status.VESSEL);
+  }
+
+  public void setClean(int[] coords) {
+
   }
 
   @Override
