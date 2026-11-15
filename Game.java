@@ -65,7 +65,6 @@ public class Game {
   }
 
   private void placeBarrier() {
-    Cell[][] array = grid.getGrid();
     int[] barrierCoord = new int[2];
     System.out.print("Barrier row: ");
     barrierCoord[0] = in.nextInt();
@@ -76,7 +75,7 @@ public class Game {
     in.nextLine();
 
     remainingBarriers--;
-    array[barrierCoord[0]][barrierCoord[1]].setStatus(Cell.Status.BARRIER);
+    grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
   }
 
   // TODO: implement
@@ -90,8 +89,10 @@ public class Game {
   }
 
   public void run() {
-    System.out.println("=== Oil Spill Response ===\n");
-    display();
-    evalPlayerAction();
+    for (int i = 0; i < 99; i++) {
+      System.out.println("=== Oil Spill Response ===\n");
+      display();
+      evalPlayerAction();
+    }
   }
 }
