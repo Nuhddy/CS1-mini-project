@@ -19,12 +19,10 @@ public class Grid {
   private final int N_ROCKS;
 
   public Grid(
-    int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks
-  ) {
+      int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks) {
     if (rows < 8 || rows > 99 || cols < 12 || cols > 99) {
       throw new ArithmeticException(
-        String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols)
-      );
+          String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
     }
 
     this.ROWS = rows;
@@ -107,5 +105,13 @@ public class Grid {
     }
 
     return s;
+  }
+
+  public Cell[][] getGrid() {
+    return array;
+  }
+
+  public void setGrid(int row, int col, Cell.Status status) {
+    array[row][col].setStatus(status);
   }
 }
