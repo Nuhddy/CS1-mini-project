@@ -1,3 +1,9 @@
+/*
+ * Authors: N. Elkhatali 83938
+ * S. Stefanovich 83898
+ *
+ */
+/** Code for Cell object containing a simple status */
 public class Cell {
   public enum Status {
     CLEAN,
@@ -19,14 +25,17 @@ public class Cell {
     this(Status.CLEAN);
   }
 
+  /** Retrieves Status enum */
   public Status getStatus() {
     return this.status;
   }
 
+  /** Changes Status enum */
   public void setStatus(Status status) {
     this.status = status;
   }
 
+  /** Checks if two Cell objects have the same Status */
   public boolean equals(Cell cell) {
     if (cell.getStatus() == this.status) {
       return true;
@@ -35,6 +44,7 @@ public class Cell {
     return false;
   }
 
+  /** Converts Cell object into a string */
   @Override
   public String toString() {
     String s = "";
