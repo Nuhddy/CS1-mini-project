@@ -8,38 +8,37 @@ public class Grid {
     SOUTH,
   }
 
-  private int rows;
-  private int cols;
+  private final int ROWS;
+  private final int COLS;
+  private final Direction CURRENT;
   private Cell[][] array;
-  private Direction current;
 
-  private final int[][] OIL_COORDS = {
-    {4, 1}, {5, 1}, {4, 2}, {5, 2}, {6, 2}, {5, 3}, {7, 4}, {8, 4}, {7, 5}, {8, 5}, {9, 5}, {8, 6}
-  };
-  private final int[][] SHORE_COORDS = {
-    {10, 0}, {11, 0}, {11, 1}, {10, 2}, {11, 2}, {11, 3}, {11, 4}, {11, 5}, {10, 6}, {11, 6},
-    {0, 7}, {1, 7}, {2, 7}, {9, 7}, {10, 7}, {11, 7}
-  };
-  private final int[][] VESSEL_COORDS = {{0, 4}};
-  private final int N_ROCKS = 6;
+  private final int[][] OIL_COORDS;
+  private final int[][] SHORE_COORDS;
+  private final int[] VESSEL_COORDS;
+  private final int N_ROCKS;
 
-  public Grid(int rows, int cols) {
-    if ((rows <= 0 && rows >= 100) || (cols <= 0 && cols >= 100)) {
-      return;
+  public Grid(
+    int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks
+  ) {
+    if (rows < 8 || rows > 99 || cols < 12 || cols > 99) {
+      throw new ArithmeticException(
+        String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols)
+      );
     }
 
-    this.rows = rows;
-    this.cols = cols;
-    this.current = Direction.EAST;
+    this.ROWS = rows;
+    this.COLS = cols;
+    this.CURRENT = Direction.EAST;
+    this.OIL_COORDS = oilCoords;
+    this.SHORE_COORDS = shoreCoords;
+    this.VESSEL_COORDS = vesselCoords;
+    this.N_ROCKS = nRocks;
     array = generateClean(rows, cols);
     generate(OIL_COORDS, Cell.Status.OIL);
     generate(SHORE_COORDS, Cell.Status.SHORE);
     generate(VESSEL_COORDS, Cell.Status.VESSEL);
     generateRandom(N_ROCKS, Cell.Status.CLEAN, Cell.Status.ROCK);
-  }
-
-  public Grid() {
-    this(8, 12);
   }
 
   private Cell[][] generateClean(int rows, int cols) {
@@ -59,12 +58,17 @@ public class Grid {
     return array;
   }
 
+  private Cell[][] generate(int[] coords, Cell.Status status) {
+    int[][] a = {coords};
+    return generate(a, status);
+  }
+
   private Cell[][] generateRandom(int amount, Cell.Status targetStatus, Cell.Status status) {
     Random random = new Random();
     int i = 0;
     while (i < amount) {
-      int r = random.nextInt(rows);
-      int c = random.nextInt(cols);
+      int r = random.nextInt(ROWS);
+      int c = random.nextInt(COLS);
       if (array[r][c].getStatus() == targetStatus) {
         array[r][c] = new Cell(status);
         i++;
@@ -74,7 +78,15 @@ public class Grid {
   }
 
   public Direction getCurrent() {
-    return current;
+    return CURRENT;
+  }
+
+  public int[][] getOilCoords() {
+    return OIL_COORDS;
+  }
+
+  public int[] getVesselCoords() {
+    return VESSEL_COORDS;
   }
 
   @Override
@@ -82,15 +94,15 @@ public class Grid {
     String s = "  ";
 
     // x coords
-    for (int c = 0; c < cols; c++) {
+    for (int c = 0; c < COLS; c++) {
       s += String.format("%3d", c);
     }
     s += "\n";
 
-    for (int r = 0; r < rows; r++) {
+    for (int r = 0; r < ROWS; r++) {
       // y coords
       s += String.format("%2d", r);
-      for (int c = 0; c < cols; c++) {
+      for (int c = 0; c < COLS; c++) {
         s += String.format("%3s", array[r][c]);
       }
       s += "\n";

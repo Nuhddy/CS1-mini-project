@@ -1,6 +1,10 @@
 public class OilSpillResponse {
   public static void main(String[] args) {
-    Game game = new Game();
-    game.run();
+    try {
+      Game game = new Game();
+      game.run();
+    } catch (Exception e) {
+      System.out.println(e);
+    }
   }
 }
