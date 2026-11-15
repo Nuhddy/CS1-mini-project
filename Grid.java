@@ -51,16 +51,14 @@ public class Grid {
     return array;
   }
 
-  private Cell[][] generate(int[][] coords, Cell.Status status) {
+  private void generate(int[][] coords, Cell.Status status) {
     for (int[] i : coords) {
-      array[i[1]][i[0]].setStatus(status);
+      generate(i, status);
     }
-    return array;
   }
 
-  private Cell[][] generate(int[] coords, Cell.Status status) {
-    int[][] a = {coords};
-    return generate(a, status);
+  private void generate(int[] coords, Cell.Status status) {
+    array[coords[1]][coords[0]].setStatus(status);
   }
 
   private Cell[][] generateRandom(int amount, Cell.Status targetStatus, Cell.Status status) {
