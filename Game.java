@@ -39,10 +39,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-      "Vessel at (%d,%d), oil collected: %d",
-      grid.getVesselCoords()[0], grid.getVesselCoords()[1],
-      oilCollected
-    );
+        "Vessel at (%d,%d), oil collected: %d",
+        grid.getVesselCoords()[0], grid.getVesselCoords()[1], oilCollected);
     System.out.println();
   }
 
@@ -66,15 +64,18 @@ public class Game {
     }
   }
 
-  // TODO: implement
   private void placeBarrier() {
+    int[] barrierCoord = new int[2];
     System.out.print("Barrier row: ");
-    in.nextInt();
+    barrierCoord[0] = in.nextInt();
     in.nextLine();
 
     System.out.print("Barrier col: ");
-    in.nextInt();
+    barrierCoord[1] = in.nextInt();
     in.nextLine();
+
+    remainingBarriers--;
+    grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
   }
 
   // TODO: implement
@@ -134,8 +135,10 @@ public class Game {
   }
 
   public void run() {
-    System.out.println("=== Oil Spill Response ===\n");
-    display();
-    evalPlayerAction();
+    for (int i = 0; i < 99; i++) {
+      System.out.println("=== Oil Spill Response ===\n");
+      display();
+      evalPlayerAction();
+    }
   }
 }
