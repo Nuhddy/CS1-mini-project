@@ -79,12 +79,58 @@ public class Game {
 
   // TODO: implement
   private void sailVessel() {
-    System.out.print("Direction (N, E, S, W): ");
-    in.nextLine();
+    Grid.Direction dir = null;
+    int dist = 0;
 
-    System.out.print("Number of cells: ");
-    in.nextInt();
-    in.nextLine();
+    // choose direction
+    boolean f = true;
+    while (f) {
+      System.out.print("Direction (N, E, S, W): ");
+      switch (in.nextLine().toUpperCase()) {
+        case "N":
+          dir = Grid.Direction.NORTH;
+          f = false;
+          break;
+        case "E":
+          dir = Grid.Direction.EAST;
+          f = false;
+          break;
+        case "S":
+          dir = Grid.Direction.SOUTH;
+          f = false;
+          break;
+        case "W":
+          dir = Grid.Direction.WEST;
+          f = false;
+          break;
+        default:
+          System.out.println("Please enter N, E, S, or W.");
+          break;
+      }
+    }
+
+    // choose distance
+    f = true;
+    while (f) {
+      System.out.print("Number of cells: ");
+      if (in.hasNextInt()) {
+        int i = in.nextInt();
+        if (i >= 1 && i <= 4) {
+          dist = i;
+          f = false;
+          in.nextLine();
+        } else {
+          System.out.println("Please enter a number between 1-4.");
+        }
+      } else {
+        in.nextLine();
+      }
+    }
+
+    // move vessel
+
+
+    // skim oil
   }
 
   public void run() {
