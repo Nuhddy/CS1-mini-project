@@ -1,8 +1,11 @@
+import java.util.Scanner;
+
 public class Game {
   private Grid grid;
   private int round;
   private int remainingBarriers;
   private int oilCollected;
+  private Scanner in;
 
   private final int[][] INIT_OIL_COORDS = {
     {4, 1}, {5, 1}, {4, 2}, {5, 2}, {6, 2}, {5, 3}, {7, 4}, {8, 4}, {7, 5}, {8, 5}, {9, 5}, {8, 6}
@@ -19,6 +22,7 @@ public class Game {
     round = 1;
     remainingBarriers = 5;
     oilCollected = 0;
+    in = new Scanner(System.in);
   }
 
   public Game() {
@@ -42,8 +46,50 @@ public class Game {
     System.out.println();
   }
 
+  private void evalPlayerAction() {
+    System.out.print("Action (B = place barrier, V = sail vessel): ");
+    boolean f = true;
+    while (f) {
+      switch (in.nextLine().toUpperCase()) {
+        case "B":
+          placeBarrier();
+          f = false;
+          break;
+        case "V":
+          sailVessel();
+          f = false;
+          break;
+        default:
+          System.out.println("Please enter B or V.");
+          break;
+      }
+    }
+  }
+
+  // TODO: implement
+  private void placeBarrier() {
+    System.out.print("Barrier row: ");
+    in.nextInt();
+    in.nextLine();
+
+    System.out.print("Barrier col: ");
+    in.nextInt();
+    in.nextLine();
+  }
+
+  // TODO: implement
+  private void sailVessel() {
+    System.out.print("Direction (N, E, S, W): ");
+    in.nextLine();
+
+    System.out.print("Number of cells: ");
+    in.nextInt();
+    in.nextLine();
+  }
+
   public void run() {
     System.out.println("=== Oil Spill Response ===\n");
     display();
+    evalPlayerAction();
   }
 }
