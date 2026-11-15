@@ -5,7 +5,8 @@ public class Game {
   private Grid grid;
   private int round;
   private int remainingBarriers;
-  private int oilCollected;
+  private int remainingOil;
+  private int collectedOil;
   private Scanner in;
 
   private final int[][] INIT_OIL_COORDS = {
@@ -22,7 +23,8 @@ public class Game {
     grid = new Grid(rows, cols, INIT_OIL_COORDS, INIT_SHORE_COORDS, INIT_VESSEL_COORDS, N_ROCKS);
     round = 1;
     remainingBarriers = 5;
-    oilCollected = 0;
+    remainingOil = INIT_OIL_COORDS.length;
+    collectedOil = 0;
     in = new Scanner(System.in);
   }
 
@@ -35,13 +37,13 @@ public class Game {
     System.out.print(grid.toString());
     System.out.printf("Current: %s", grid.getCurrent().name().toLowerCase());
     System.out.print("   ");
-    System.out.printf("Oil at sea: %s", grid.getOilCoords().length);
+    System.out.printf("Oil at sea: %s", remainingOil);
     System.out.print("   ");
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
       "Vessel at (%d,%d), oil collected: %d",
-      grid.getVesselCoords()[0], grid.getVesselCoords()[1], oilCollected);
+      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -197,7 +199,8 @@ public class Game {
       } catch (ArrayIndexOutOfBoundsException e) {}
     }
 
-    oilCollected += oilSkimmed;
+    collectedOil += oilSkimmed;
+    remainingOil -= oilSkimmed;
 
     System.out.printf("The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], oilSkimmed);
   }
