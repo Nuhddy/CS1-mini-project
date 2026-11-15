@@ -73,9 +73,14 @@ public class Game {
     System.out.print("Barrier col: ");
     barrierCoord[1] = in.nextInt();
     in.nextLine();
+    if (grid.getGrid()[barrierCoord[0]][barrierCoord[1]].getStatus() == Cell.Status.CLEAN) {
 
-    remainingBarriers--;
-    grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
+      remainingBarriers--;
+      grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
+    } else {
+      System.out.println("BARRIER can only be placed in CLEAN cell.\nTry again:");
+      placeBarrier();
+    }
   }
 
   // TODO: implement
