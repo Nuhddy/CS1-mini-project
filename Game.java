@@ -1,5 +1,4 @@
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game {
   private Grid grid;
@@ -42,8 +41,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-      "Vessel at (%d,%d), oil collected: %d",
-      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
+        "Vessel at (%d,%d), oil collected: %d",
+        grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -161,7 +160,8 @@ public class Game {
       try {
         if (grid.isObstacle(newCoords)) {
           Cell.Status cand = grid.getGrid()[newCoords[1]][newCoords[0]].getStatus();
-          System.out.printf("Sailed %d of %d field(s) to avoid %s.\n", i, dist, cand.name().toLowerCase());
+          System.out.printf(
+              "Sailed %d of %d field(s) to avoid %s.\n", i, dist, cand.name().toLowerCase());
           break;
         }
       } catch (ArrayIndexOutOfBoundsException e) {
@@ -196,13 +196,29 @@ public class Game {
           grid.setGrid(i[1], i[0], Cell.Status.CLEAN);
           oilSkimmed++;
         }
-      } catch (ArrayIndexOutOfBoundsException e) {}
+      } catch (ArrayIndexOutOfBoundsException e) {
+      }
     }
 
     collectedOil += oilSkimmed;
     remainingOil -= oilSkimmed;
 
-    System.out.printf("The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], oilSkimmed);
+    System.out.printf(
+        "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], oilSkimmed);
+  }
+
+  private Grid.Direction windDir(Grid.Direction dir) {
+    Random random = new Random();
+    double s = random.nextDouble();
+    Grid.Direction newDir = Grid.Direction.NORTH;
+    if (s < 0.5) {
+      newDir = dir;
+    } else if (0.5 > s && s < 0.75) {
+      newDir = Grid.turnRight(dir);
+    } else if (s > 0.75) {
+      newDir = Grid.turnLeft(dir);
+    }
+    return newDir;
   }
 
   public void run() {

@@ -38,11 +38,10 @@ public class Grid {
   public static final String WHITE_BACKGROUND = "\u001B[47m";
 
   public Grid(
-    int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks
-  ) {
+      int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks) {
     if (rows < 8 || rows > 99 || cols < 12 || cols > 99) {
       throw new ArithmeticException(
-        String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
+          String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
     }
 
     this.ROWS = rows;
@@ -95,8 +94,10 @@ public class Grid {
 
   public boolean isObstacle(int[] coords) {
     Cell.Status status = array[coords[1]][coords[0]].getStatus();
-    if (status == Cell.Status.SHORE || status == Cell.Status.BARRIER ||
-        status == Cell.Status.ROCK || status == Cell.Status.OILEDSHORE) {
+    if (status == Cell.Status.SHORE
+        || status == Cell.Status.BARRIER
+        || status == Cell.Status.ROCK
+        || status == Cell.Status.OILEDSHORE) {
       return true;
     }
 
@@ -120,9 +121,7 @@ public class Grid {
     setGrid(coords[1], coords[0], Cell.Status.VESSEL);
   }
 
-  public void setClean(int[] coords) {
-
-  }
+  public void setClean(int[] coords) {}
 
   @Override
   public String toString() {
@@ -174,5 +173,44 @@ public class Grid {
 
   public void setGrid(int row, int col, Cell.Status status) {
     array[row][col].setStatus(status);
+  }
+
+  public static Direction turnRight(Direction dir) {
+    Direction newDir = Direction.NORTH;
+    switch (dir) {
+      case (Direction.NORTH):
+        newDir = Direction.EAST;
+        break;
+      case (Direction.EAST):
+        newDir = Direction.SOUTH;
+        break;
+      case (Direction.SOUTH):
+        newDir = Direction.WEST;
+        break;
+      case (Direction.WEST):
+        newDir = Direction.NORTH;
+        break;
+    }
+
+    return newDir;
+  }
+
+  public static Direction turnLeft(Direction dir) {
+    Direction newDir = Direction.NORTH;
+    switch (dir) {
+      case (Direction.NORTH):
+        newDir = Direction.WEST;
+        break;
+      case (Direction.WEST):
+        newDir = Direction.SOUTH;
+        break;
+      case (Direction.SOUTH):
+        newDir = Direction.EAST;
+        break;
+      case (Direction.EAST):
+        newDir = Direction.NORTH;
+        break;
+    }
+    return newDir;
   }
 }
