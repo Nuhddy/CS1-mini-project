@@ -175,45 +175,6 @@ public class Grid {
     array[row][col].setStatus(status);
   }
 
-  public static Direction turnRight(Direction dir) {
-    Direction newDir = Direction.NORTH;
-    switch (dir) {
-      case (Direction.NORTH):
-        newDir = Direction.EAST;
-        break;
-      case (Direction.EAST):
-        newDir = Direction.SOUTH;
-        break;
-      case (Direction.SOUTH):
-        newDir = Direction.WEST;
-        break;
-      case (Direction.WEST):
-        newDir = Direction.NORTH;
-        break;
-    }
-
-    return newDir;
-  }
-
-  public static Direction turnLeft(Direction dir) {
-    Direction newDir = Direction.NORTH;
-    switch (dir) {
-      case (Direction.NORTH):
-        newDir = Direction.WEST;
-        break;
-      case (Direction.WEST):
-        newDir = Direction.SOUTH;
-        break;
-      case (Direction.SOUTH):
-        newDir = Direction.EAST;
-        break;
-      case (Direction.EAST):
-        newDir = Direction.NORTH;
-        break;
-    }
-    return newDir;
-  }
-
   public static Direction relativeTurn(Direction initDir, int relDir) {
     int enumLength = Direction.values().length;
     int newDirIdx = (initDir.ordinal() + relDir) % enumLength;
