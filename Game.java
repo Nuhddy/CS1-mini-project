@@ -2,10 +2,13 @@ import java.util.*;
 
 public class Game {
   private Grid grid;
+
   private int round;
+  private Grid.Direction current;
   private int remainingBarriers;
   private int remainingOil;
   private int collectedOil;
+
   private Scanner in;
 
   private final int[][] INIT_OIL_COORDS = {
@@ -20,10 +23,13 @@ public class Game {
 
   public Game(int rows, int cols) {
     grid = new Grid(rows, cols, INIT_OIL_COORDS, INIT_SHORE_COORDS, INIT_VESSEL_COORDS, N_ROCKS);
+
     round = 1;
+    current = Grid.Direction.EAST;
     remainingBarriers = 5;
     remainingOil = INIT_OIL_COORDS.length;
     collectedOil = 0;
+
     in = new Scanner(System.in);
   }
 
@@ -193,7 +199,17 @@ public class Game {
     );
   }
 
-  private Grid.Direction windDir(Grid.Direction dir) {
+  // TODO: implement
+  private void updateOilCells() {
+    // loop over all cells in grid
+      // check if cell is oil
+        // check if neighbor is out of bounds
+        // check if neighbor is obstacle
+        // check if neighbor is clean
+          // move original oil cell to new cell
+  }
+
+  private Grid.Direction updateCurrent(Grid.Direction dir) {
     Random r = new Random();
     int i = r.nextInt(4);
 
@@ -208,11 +224,18 @@ public class Game {
 
   public void run() {
     while (remainingOil > 0) {
+      // current round
       System.out.println("=== Oil Spill Response ===\n");
       display();
       evalPlayerAction();
+
+      // set up next round
+      updateOilCells();
       round++;
+      current = updateCurrent(current);
     }
+
+    // game over
     display();
   }
 }
