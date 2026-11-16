@@ -204,7 +204,9 @@ public class Game {
     int[] newCoords = new int[2];
     int[][] oilCoords = new int[remainingOil][2];
     int[][] cleanCoords = new int[remainingOil][2];
+    int[][] oiledShoords = new int[remainingOil][2];
     int checkers = 0;
+    int chess = 0;
 
     // loop over all cells in grid
     for (int i = 0; i < grid.getGrid().length; i++) {
@@ -220,26 +222,36 @@ public class Game {
             System.out.println("Null @ " + j + " " + i);
             continue;
           }
-          if (grid.isObstacle(newCoords)) {
-            System.out.println("Rock @ " + j + " " + i);
-            continue;
+          if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.SHORE) {
+            oiledShoords[chess] =
+                Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
+            chess++;
+            remainingOil--;
           }
+
           if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.CLEAN) {
             System.out.println("Clean @ " + j + " " + i);
 
             cleanCoords[checkers] = Arrays.copyOf(oldCoords, 2);
-            oilCoords[checkers] = newCoords;
+            oilCoords[checkers] = Arrays.copyOf(newCoords, 2);
             checkers++;
           }
         }
       }
     }
+    // #TODO: This snippet should just reuse generate from Grid class
     for (int i = 0; i < checkers; i++) {
       // System.out.println(i + "clean: " + cleanCoords[i][1] + " " + cleanCoords[i][0]);
       // System.out.println(i + "oil: " + oilCoords[i][1] + " " + oilCoords[i][0]);
       grid.setGrid(cleanCoords[i][1], cleanCoords[i][0], Cell.Status.CLEAN);
       grid.setGrid(oilCoords[i][1], oilCoords[i][0], Cell.Status.OIL);
     }
+    for (int i = 0; i < chess; i++) {
+      // System.out.println(i + "clean: " + cleanCoords[i][1] + " " + cleanCoords[i][0]);
+      // System.out.println(i + "oil: " + oilCoords[i][1] + " " + oilCoords[i][0]);
+      grid.setGrid(oiledShoords[i][1], oiledShoords[i][0], Cell.Status.OILEDSHORE);
+    }
+
     // grid.setGrid(oldCoords[1], oldCoords[0], Cell.Status.CLEAN);
     // grid.setGrid(newCoords[1], newCoords[0], Cell.Status.OIL);
     // check if cell is oil
