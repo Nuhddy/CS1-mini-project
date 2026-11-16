@@ -47,8 +47,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-      "Vessel at (%d,%d), oil collected: %d",
-      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
+        "Vessel at (%d,%d), oil collected: %d",
+        grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -157,8 +157,7 @@ public class Game {
       if (grid.isObstacle(cand)) {
         Cell.Status status = grid.getGrid()[cand[1]][cand[0]].getStatus();
         System.out.printf(
-          "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase()
-        );
+            "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
         break;
       }
 
@@ -195,18 +194,59 @@ public class Game {
     this.collectedOil += collectedOil;
     this.remainingOil -= collectedOil;
     System.out.printf(
-      "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], collectedOil
-    );
+        "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
+        vessel[0], vessel[1], collectedOil);
   }
 
-  // TODO: implement
+  // TODO: implement oil-shore collision
   private void updateOilCells() {
+    int[] oldCoords = new int[2];
+    int[] newCoords = new int[2];
+    int[][] oilCoords = new int[remainingOil][2];
+    int[][] cleanCoords = new int[remainingOil][2];
+    int checkers = 0;
+
     // loop over all cells in grid
-      // check if cell is oil
-        // check if neighbor is out of bounds
-        // check if neighbor is obstacle
-        // check if neighbor is clean
-          // move original oil cell to new cell
+    for (int i = 0; i < grid.getGrid().length; i++) {
+      for (int j = 0; j < grid.getGrid()[0].length; j++) {
+        oldCoords[0] = j;
+        oldCoords[1] = i;
+        if (grid.getGrid()[oldCoords[1]][oldCoords[0]].getStatus()
+            == Cell.Status.OIL) { // check if cell is oil.
+
+          newCoords =
+              grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
+          if (newCoords == null) {
+            System.out.println("Null @ " + j + " " + i);
+            continue;
+          }
+          if (grid.isObstacle(newCoords)) {
+            System.out.println("Rock @ " + j + " " + i);
+            continue;
+          }
+          if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.CLEAN) {
+            System.out.println("Clean @ " + j + " " + i);
+
+            cleanCoords[checkers] = Arrays.copyOf(oldCoords, 2);
+            oilCoords[checkers] = newCoords;
+            checkers++;
+          }
+        }
+      }
+    }
+    for (int i = 0; i < checkers; i++) {
+      // System.out.println(i + "clean: " + cleanCoords[i][1] + " " + cleanCoords[i][0]);
+      // System.out.println(i + "oil: " + oilCoords[i][1] + " " + oilCoords[i][0]);
+      grid.setGrid(cleanCoords[i][1], cleanCoords[i][0], Cell.Status.CLEAN);
+      grid.setGrid(oilCoords[i][1], oilCoords[i][0], Cell.Status.OIL);
+    }
+    // grid.setGrid(oldCoords[1], oldCoords[0], Cell.Status.CLEAN);
+    // grid.setGrid(newCoords[1], newCoords[0], Cell.Status.OIL);
+    // check if cell is oil
+    // check if neighbor is out of bounds
+    // check if neighbor is obstacle
+    // check if neighbor is clean
+    // move original oil cell to new cell
   }
 
   private Grid.Direction updateCurrent(Grid.Direction dir) {
