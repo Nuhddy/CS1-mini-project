@@ -116,12 +116,11 @@ public class Grid {
     return vesselCoords;
   }
 
-  public void setVessel(int[] coords) {
-    this.vesselCoords = coords;
-    setGrid(coords[1], coords[0], Cell.Status.VESSEL);
+  public void moveVessel(int[] oldCoords, int[] newCoords) {
+    setGrid(oldCoords[1], oldCoords[0], Cell.Status.CLEAN);
+    setGrid(newCoords[1], newCoords[0], Cell.Status.VESSEL);
+    this.vesselCoords = newCoords;
   }
-
-  public void setClean(int[] coords) {}
 
   @Override
   public String toString() {
@@ -183,5 +182,34 @@ public class Grid {
     }
 
     return Direction.values()[newDirIdx];
+  }
+
+  public int[] getNeighborCoords(int[] coords, Direction dir) {
+    int x = coords[0];
+    int y = coords[1];
+
+    switch(dir) {
+      case Direction.NORTH:
+        y -= 1;
+        break;
+      case Direction.EAST:
+        x += 1;
+        break;
+      case Direction.SOUTH:
+        y += 1;
+        break;
+      case Direction.WEST:
+        x -= 1;
+        break;
+    }
+
+    // if out of bounds
+    if (x < 0 || y < 0 || x >= COLS || y >= ROWS) {
+      return null;
+    }
+
+    int[] newCoords = {x, y};
+
+    return newCoords;
   }
 }
