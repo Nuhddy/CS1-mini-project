@@ -41,8 +41,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-        "Vessel at (%d,%d), oil collected: %d",
-        grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
+      "Vessel at (%d,%d), oil collected: %d",
+      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -161,7 +161,7 @@ public class Game {
         if (grid.isObstacle(newCoords)) {
           Cell.Status cand = grid.getGrid()[newCoords[1]][newCoords[0]].getStatus();
           System.out.printf(
-              "Sailed %d of %d field(s) to avoid %s.\n", i, dist, cand.name().toLowerCase());
+            "Sailed %d of %d field(s) to avoid %s.\n", i, dist, cand.name().toLowerCase());
           break;
         }
       } catch (ArrayIndexOutOfBoundsException e) {
@@ -204,21 +204,20 @@ public class Game {
     remainingOil -= oilSkimmed;
 
     System.out.printf(
-        "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], oilSkimmed);
+      "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n", vessel[0], vessel[1], oilSkimmed);
   }
 
   private Grid.Direction windDir(Grid.Direction dir) {
-    Random random = new Random();
-    double s = random.nextDouble();
-    Grid.Direction newDir = Grid.Direction.NORTH;
-    if (s < 0.5) {
-      newDir = dir;
-    } else if (0.5 > s && s < 0.75) {
-      newDir = Grid.turnRight(dir);
-    } else if (s > 0.75) {
-      newDir = Grid.turnLeft(dir);
+    Random r = new Random();
+    int i = r.nextInt(4);
+
+    if (i == 0) {
+      return Grid.relativeTurn(dir, -1);
+    } else if (i == 1) {
+      return Grid.relativeTurn(dir, 1);
     }
-    return newDir;
+
+    return dir;
   }
 
   public void run() {

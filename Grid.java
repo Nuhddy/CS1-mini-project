@@ -4,8 +4,8 @@ public class Grid {
   public enum Direction {
     NORTH,
     EAST,
-    WEST,
     SOUTH,
+    WEST
   }
 
   private final int ROWS;
@@ -38,10 +38,10 @@ public class Grid {
   public static final String WHITE_BACKGROUND = "\u001B[47m";
 
   public Grid(
-      int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks) {
+    int rows, int cols, int[][] oilCoords, int[][] shoreCoords, int[] vesselCoords, int nRocks) {
     if (rows < 8 || rows > 99 || cols < 12 || cols > 99) {
       throw new ArithmeticException(
-          String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
+        String.format("Invalid grid dimensions: %dx%d. Expected 8x12-99x99.", rows, cols));
     }
 
     this.ROWS = rows;
@@ -212,5 +212,15 @@ public class Grid {
         break;
     }
     return newDir;
+  }
+
+  public static Direction relativeTurn(Direction initDir, int relDir) {
+    int enumLength = Direction.values().length;
+    int newDirIdx = (initDir.ordinal() + relDir) % enumLength;
+    if (newDirIdx == -1) {
+      newDirIdx = enumLength - 1;
+    }
+
+    return Direction.values()[newDirIdx];
   }
 }
