@@ -44,7 +44,7 @@ public class Game {
     this(8, 12);
   }
 
-  private void display() {
+  private void displayRound() {
     System.out.printf("--- Round %d ---\n", round);
     System.out.print(grid.toString());
     System.out.printf("Current: %s", current.name().toLowerCase());
@@ -57,6 +57,16 @@ public class Game {
       "Vessel at (%d,%d), oil collected: %d",
       grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
+  }
+
+  private void displayGameOver() {
+    System.out.println("=== Game over: no more oil at sea ===");
+    System.out.print(grid.toString());
+    System.out.printf("Oil recovered: %d of %d", collectedOil, INIT_OIL_COORDS.length);
+    System.out.print("   ");
+    System.out.printf("Oil washed ashore: %d", INIT_OIL_COORDS.length - collectedOil);
+    System.out.println();
+    System.out.printf("Score: %d\n", collectedOil);
   }
 
   private void evalPlayerAction() {
@@ -88,7 +98,7 @@ public class Game {
     int col = 0;
 
     while (f) {
-      System.out.println("Barrier row: ");
+      System.out.print("Barrier row: ");
       if (in.hasNextInt()) { // validate as int
         row = in.nextInt();
         if (row < grid.getGrid().length && row >= 0) { // validate range
@@ -96,15 +106,15 @@ public class Game {
           f = false;
           in.nextLine();
         } else {
-          System.err.println(
-            "Please choose an appropiate integer: 0-" + (grid.getGrid().length - 1));
+          System.err.printf(
+            "Please choose an appropiate integer: 0-%d.\n", grid.getGrid().length - 1);
         }
       } else {
         in.nextLine();
       }
     }
     while (g) {
-      System.out.println("Barrier col: ");
+      System.out.print("Barrier col: ");
       if (in.hasNextInt()) { // validate as int
         col = in.nextInt();
         if (col < grid.getGrid()[0].length && row >= 0) { // validate range
@@ -112,8 +122,8 @@ public class Game {
           g = false;
           in.nextLine();
         } else {
-          System.err.println(
-            "Please choose an appropiate integer 0-" + (grid.getGrid()[0].length - 1));
+          System.err.printf(
+            "Please choose an appropiate integer 0-%d.\n", grid.getGrid()[0].length - 1);
         }
       } else {
         in.nextLine();
@@ -124,8 +134,9 @@ public class Game {
         == Cell.Status.CLEAN) { // check if coords given match a CLEAN cell.
       remainingBarriers--;
       grid.setCell(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
+      System.out.printf("Barrier placed at (%d,%d).\n", barrierCoord[0], barrierCoord[1]);
     } else {
-      System.err.println("BARRIER can only be placed in CLEAN cell.\nTry again:");
+      System.err.println("Barriers can only be placed on clean water, away from the vessel.");
       placeBarrier();
     }
   }
@@ -254,10 +265,11 @@ public class Game {
     int[] oldCoords = new int[2];
     int[] newCoords = new int[2];
     int[][] oilCoords = new int[remainingOil][2];
-    int[][] cleanCoords = new int[remainingOil][2];
+    int[][] cleanOilCoords = new int[remainingOil][2];
     int[][] oiledShoreCoords = new int[remainingOil][2];
-    int checkers = 0;
-    int chess = 0;
+    int[][] cleanOiledShoreCoords = new int[remainingOil][2];
+    int oilCounter = 0;
+    int oiledShoreCounter = 0;
 
     // loop over all cells in grid
     for (int i = 0; i < grid.getGrid().length; i++) {
@@ -270,32 +282,31 @@ public class Game {
           newCoords =
             grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
           if (newCoords == null) {
-            System.out.println("Null @ " + j + " " + i);
             continue;
           }
           if (grid.getCell(newCoords[0], newCoords[1]).getStatus() == Cell.Status.SHORE) {
-            oiledShoreCoords[chess] =
+            cleanOiledShoreCoords[oiledShoreCounter] = Arrays.copyOf(oldCoords, 2); // store value in cleanCoords
+            oiledShoreCoords[oiledShoreCounter] =
               Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
-            chess++;
+            oiledShoreCounter++;
             remainingOil--;
           }
 
           if (grid.getCell(newCoords[0], newCoords[1]).getStatus() == Cell.Status.CLEAN) {
-            System.out.println("Clean @ " + j + " " + i);
-
-            cleanCoords[checkers] = Arrays.copyOf(oldCoords, 2); // store value in cleanCoords
-            oilCoords[checkers] = Arrays.copyOf(newCoords, 2); // store value in oilCoords
-            checkers++;
+            cleanOilCoords[oilCounter] = Arrays.copyOf(oldCoords, 2); // store value in cleanCoords
+            oilCoords[oilCounter] = Arrays.copyOf(newCoords, 2); // store value in oilCoords
+            oilCounter++;
           }
         }
       }
     }
-    // #TODO: This snippet should just reuse generate from Grid class
-    for (int i = 0; i < checkers; i++) { // loops over board placing OIL and CLEAN cells.
-      grid.setCell(cleanCoords[i][0], cleanCoords[i][1], Cell.Status.CLEAN);
+
+    for (int i = 0; i < oilCounter; i++) { // loops over board placing OIL and CLEAN cells.
+      grid.setCell(cleanOilCoords[i][0], cleanOilCoords[i][1], Cell.Status.CLEAN);
       grid.setCell(oilCoords[i][0], oilCoords[i][1], Cell.Status.OIL);
     }
-    for (int i = 0; i < chess; i++) { // loops over board placing OILEDSHORE cells.
+    for (int i = 0; i < oiledShoreCounter; i++) { // loops over board placing OILEDSHORE cells.
+      grid.setCell(cleanOiledShoreCoords[i][0], cleanOiledShoreCoords[i][1], Cell.Status.CLEAN);
       grid.setCell(oiledShoreCoords[i][0], oiledShoreCoords[i][1], Cell.Status.OILEDSHORE);
     }
   }
@@ -314,19 +325,22 @@ public class Game {
   }
 
   public void run() {
+    // start
+    System.out.println("=== Oil Spill Response ===\n");
+
     while (remainingOil > 0) {
       // current round
-      System.out.println("=== Oil Spill Response ===\n");
-      display();
+      displayRound();
       evalPlayerAction();
 
       // set up next round
       updateOilCells();
       round++;
       this.current = updateCurrent(current);
+      System.out.println();
     }
 
     // game over
-    display();
+    displayGameOver();
   }
 }
