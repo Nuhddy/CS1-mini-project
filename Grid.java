@@ -13,8 +13,6 @@ public class Grid {
 
   private Cell[][] array;
   private int[] vesselCoords;
-  private int[][] oilCoords;
-  private int[][] shoreCoords;
 
   private final int N_ROCKS;
   public static final String RESET = "\u001B[0m";
@@ -45,8 +43,6 @@ public class Grid {
 
     this.ROWS = rows;
     this.COLS = cols;
-    this.oilCoords = oilCoords;
-    this.shoreCoords = shoreCoords;
     this.vesselCoords = vesselCoords;
     this.N_ROCKS = nRocks;
     array = generateClean(rows, cols);
@@ -100,10 +96,6 @@ public class Grid {
     }
 
     return false;
-  }
-
-  public int[][] getOilCoords() {
-    return oilCoords;
   }
 
   public int[] getVesselCoords() {
