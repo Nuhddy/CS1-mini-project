@@ -10,7 +10,6 @@ public class Grid {
 
   private final int ROWS;
   private final int COLS;
-  private final Direction CURRENT;
 
   private Cell[][] array;
   private int[] vesselCoords;
@@ -46,7 +45,6 @@ public class Grid {
 
     this.ROWS = rows;
     this.COLS = cols;
-    this.CURRENT = Direction.EAST;
     this.oilCoords = oilCoords;
     this.shoreCoords = shoreCoords;
     this.vesselCoords = vesselCoords;
@@ -102,10 +100,6 @@ public class Grid {
     }
 
     return false;
-  }
-
-  public Direction getCurrent() {
-    return CURRENT;
   }
 
   public int[][] getOilCoords() {

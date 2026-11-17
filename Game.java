@@ -40,7 +40,7 @@ public class Game {
   private void display() {
     System.out.printf("--- Round %d ---\n", round);
     System.out.print(grid.toString());
-    System.out.printf("Current: %s", grid.getCurrent().name().toLowerCase());
+    System.out.printf("Current: %s", current.name().toLowerCase());
     System.out.print("   ");
     System.out.printf("Oil at sea: %s", remainingOil);
     System.out.print("   ");
@@ -296,7 +296,7 @@ public class Game {
       // set up next round
       updateOilCells();
       round++;
-      current = updateCurrent(current);
+      this.current = updateCurrent(current);
     }
 
     // game over
