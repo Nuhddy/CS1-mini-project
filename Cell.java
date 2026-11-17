@@ -1,10 +1,18 @@
 /*
- * Authors: N. Elkhatali 83938
- * S. Stefanovich 83898
+ * Authors:
+ * N. Elkhatali, 83938
+ * S. Stefanovich, 83898
  *
  */
-/** Code for Cell object containing a simple status */
+
+/**
+  * Represents a cell containing its status.
+  */
 public class Cell {
+
+  /**
+    * Enumerator containing values for valid cell status.
+    */
   public enum Status {
     CLEAN,
     OIL,
@@ -15,27 +23,42 @@ public class Cell {
     OILEDSHORE,
   }
 
+  // Mutable field
   private Status status;
 
+  /**
+    * Main constructor.
+    * @param status Status of cell.
+    */
   public Cell(Status status) {
     this.status = status;
   }
 
+  /**
+    * Overloaded constructor method.
+    * Calls main constructor with CLEAN status.
+    */
   public Cell() {
     this(Status.CLEAN);
   }
 
-  /** Retrieves Status enum */
+  /**
+    * Get status.
+    */
   public Status getStatus() {
     return this.status;
   }
 
-  /** Changes Status enum */
+  /**
+    * Set status.
+    */
   public void setStatus(Status status) {
     this.status = status;
   }
 
-  /** Checks if two Cell objects have the same Status */
+  /**
+    * Check if status is equal to that of another Cell object.
+    */
   public boolean equals(Cell cell) {
     if (cell.getStatus() == this.status) {
       return true;
@@ -44,7 +67,9 @@ public class Cell {
     return false;
   }
 
-  /** Converts Cell object into a string */
+  /**
+    * Represents a Cell object as a string based on its status.
+    */
   @Override
   public String toString() {
     String s = "";
