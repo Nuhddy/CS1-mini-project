@@ -101,7 +101,7 @@ public class Grid {
   }
 
   private void generate(int[] coords, Cell.Status status) {
-    array[coords[1]][coords[0]].setStatus(status);
+    setCell(coords[0], coords[1], status);
   }
 
   private Cell[][] generateRandom(int amount, Cell.Status targetStatus, Cell.Status status) {
@@ -122,7 +122,7 @@ public class Grid {
     * Checks if Cell at given coordinates is an obstacle.
     */
   public boolean isObstacle(int[] coords) {
-    Cell.Status status = array[coords[1]][coords[0]].getStatus();
+    Cell.Status status = getCell(coords[0], coords[1]).getStatus();
     if (status == Cell.Status.SHORE
         || status == Cell.Status.BARRIER
         || status == Cell.Status.ROCK
@@ -144,8 +144,8 @@ public class Grid {
     * Move vessel and leave behind a clean Cell.
     */
   public void moveVessel(int[] oldCoords, int[] newCoords) {
-    setGrid(oldCoords[1], oldCoords[0], Cell.Status.CLEAN);
-    setGrid(newCoords[1], newCoords[0], Cell.Status.VESSEL);
+    setCell(oldCoords[0], oldCoords[1], Cell.Status.CLEAN);
+    setCell(newCoords[0], newCoords[1], Cell.Status.VESSEL);
     this.vesselCoords = newCoords;
   }
 
@@ -197,12 +197,16 @@ public class Grid {
     return s;
   }
 
-  public Cell[][] getGrid() {
-    return array;
+  public Cell getCell(int x, int y) {
+    return array[y][x];
   }
 
-  public void setGrid(int row, int col, Cell.Status status) {
-    array[row][col].setStatus(status);
+  public void setCell(int x, int y, Cell.Status status) {
+    array[y][x].setStatus(status);
+  }
+
+  public Cell[][] getGrid() {
+    return array;
   }
 
   /**

@@ -54,8 +54,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-        "Vessel at (%d,%d), oil collected: %d",
-        grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
+      "Vessel at (%d,%d), oil collected: %d",
+      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -92,12 +92,12 @@ public class Game {
       if (in.hasNextInt()) { // validate as int
         row = in.nextInt();
         if (row < grid.getGrid().length && row >= 0) { // validate range
-          barrierCoord[0] = row;
+          barrierCoord[1] = row;
           f = false;
           in.nextLine();
         } else {
           System.err.println(
-              "Please choose an appropiate integer: 0-" + (grid.getGrid().length - 1));
+            "Please choose an appropiate integer: 0-" + (grid.getGrid().length - 1));
         }
       } else {
         in.nextLine();
@@ -108,22 +108,22 @@ public class Game {
       if (in.hasNextInt()) { // validate as int
         col = in.nextInt();
         if (col < grid.getGrid()[0].length && row >= 0) { // validate range
-          barrierCoord[1] = col;
+          barrierCoord[0] = col;
           g = false;
           in.nextLine();
         } else {
           System.err.println(
-              "Please choose an appropiate integer 0-" + (grid.getGrid()[0].length - 1));
+            "Please choose an appropiate integer 0-" + (grid.getGrid()[0].length - 1));
         }
       } else {
         in.nextLine();
       }
     }
 
-    if (grid.getGrid()[barrierCoord[0]][barrierCoord[1]].getStatus()
+    if (grid.getCell(barrierCoord[0], barrierCoord[1]).getStatus()
         == Cell.Status.CLEAN) { // check if coords given match a CLEAN cell.
       remainingBarriers--;
-      grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
+      grid.setCell(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
     } else {
       System.err.println("BARRIER can only be placed in CLEAN cell.\nTry again:");
       placeBarrier();
@@ -145,14 +145,14 @@ public class Game {
 
       // if candidate is obstacle
       if (grid.isObstacle(cand)) {
-        Cell.Status status = grid.getGrid()[cand[1]][cand[0]].getStatus();
+        Cell.Status status = grid.getCell(cand[0], cand[1]).getStatus();
         System.out.printf(
-            "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
+          "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
         break;
       }
 
       // if candidate is oil
-      if (grid.getGrid()[cand[1]][cand[0]].getStatus() == Cell.Status.OIL) {
+      if (grid.getCell(cand[0], cand[1]).getStatus() == Cell.Status.OIL) {
         collectedOil++;
       }
 
@@ -178,9 +178,9 @@ public class Game {
       }
 
       // if candidate is oil
-      if (grid.getGrid()[cand[1]][cand[0]].getStatus() == Cell.Status.OIL) {
+      if (grid.getCell(cand[0], cand[1]).getStatus() == Cell.Status.OIL) {
         // update state
-        grid.setGrid(cand[1], cand[0], Cell.Status.CLEAN);
+        grid.setCell(cand[0], cand[1], Cell.Status.CLEAN);
         collectedOil++;
       }
     }
@@ -245,8 +245,8 @@ public class Game {
 
     int[] vessel = grid.getVesselCoords();
     System.out.printf(
-        "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
-        vessel[0], vessel[1], collectedOil);
+      "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
+      vessel[0], vessel[1], collectedOil);
   }
 
   /** Moves appropiate OIL cells along the Grid.Direction given in grid object. */
@@ -255,7 +255,7 @@ public class Game {
     int[] newCoords = new int[2];
     int[][] oilCoords = new int[remainingOil][2];
     int[][] cleanCoords = new int[remainingOil][2];
-    int[][] oiledShoords = new int[remainingOil][2];
+    int[][] oiledShoreCoords = new int[remainingOil][2];
     int checkers = 0;
     int chess = 0;
 
@@ -264,23 +264,23 @@ public class Game {
       for (int j = 0; j < grid.getGrid()[0].length; j++) {
         oldCoords[0] = j;
         oldCoords[1] = i;
-        if (grid.getGrid()[oldCoords[1]][oldCoords[0]].getStatus()
+        if (grid.getCell(oldCoords[0], oldCoords[1]).getStatus()
             == Cell.Status.OIL) { // check if cell is oil.
 
           newCoords =
-              grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
+            grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
           if (newCoords == null) {
             System.out.println("Null @ " + j + " " + i);
             continue;
           }
-          if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.SHORE) {
-            oiledShoords[chess] =
-                Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
+          if (grid.getCell(newCoords[0], newCoords[1]).getStatus() == Cell.Status.SHORE) {
+            oiledShoreCoords[chess] =
+              Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
             chess++;
             remainingOil--;
           }
 
-          if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.CLEAN) {
+          if (grid.getCell(newCoords[0], newCoords[1]).getStatus() == Cell.Status.CLEAN) {
             System.out.println("Clean @ " + j + " " + i);
 
             cleanCoords[checkers] = Arrays.copyOf(oldCoords, 2); // store value in cleanCoords
@@ -292,11 +292,11 @@ public class Game {
     }
     // #TODO: This snippet should just reuse generate from Grid class
     for (int i = 0; i < checkers; i++) { // loops over board placing OIL and CLEAN cells.
-      grid.setGrid(cleanCoords[i][1], cleanCoords[i][0], Cell.Status.CLEAN);
-      grid.setGrid(oilCoords[i][1], oilCoords[i][0], Cell.Status.OIL);
+      grid.setCell(cleanCoords[i][0], cleanCoords[i][1], Cell.Status.CLEAN);
+      grid.setCell(oilCoords[i][0], oilCoords[i][1], Cell.Status.OIL);
     }
     for (int i = 0; i < chess; i++) { // loops over board placing OILEDSHORE cells.
-      grid.setGrid(oiledShoords[i][1], oiledShoords[i][0], Cell.Status.OILEDSHORE);
+      grid.setCell(oiledShoreCoords[i][0], oiledShoreCoords[i][1], Cell.Status.OILEDSHORE);
     }
   }
 
