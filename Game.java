@@ -1,5 +1,12 @@
+/*
+ * Authors:
+ * N. Elkhatali, 83938
+ * S. Stefanovich, 83898
+ */
+
 import java.util.*;
 
+/** Represents game. Contains game logic that decides behavior of grid and cell. */
 public class Game {
   private Grid grid;
 
@@ -72,18 +79,19 @@ public class Game {
     }
   }
 
+  /** Places a barrier at a given coordinate on the grid */
   private void placeBarrier() {
     int[] barrierCoord = new int[2];
     boolean f = true;
     boolean g = true;
     int row = 0;
-    int col;
+    int col = 0;
 
     while (f) {
       System.out.println("Barrier row: ");
-      if (in.hasNextInt()) {
+      if (in.hasNextInt()) { // validate as int
         row = in.nextInt();
-        if (row < grid.getGrid().length && row >= 0) {
+        if (row < grid.getGrid().length && row >= 0) { // validate range
           barrierCoord[0] = row;
           f = false;
           in.nextLine();
@@ -97,9 +105,9 @@ public class Game {
     }
     while (g) {
       System.out.println("Barrier col: ");
-      if (in.hasNextInt()) {
+      if (in.hasNextInt()) { // validate as int
         col = in.nextInt();
-        if (col < grid.getGrid()[0].length && row >= 0) {
+        if (col < grid.getGrid()[0].length && row >= 0) { // validate range
           barrierCoord[1] = col;
           g = false;
           in.nextLine();
@@ -112,7 +120,8 @@ public class Game {
       }
     }
 
-    if (grid.getGrid()[barrierCoord[0]][barrierCoord[1]].getStatus() == Cell.Status.CLEAN) {
+    if (grid.getGrid()[barrierCoord[0]][barrierCoord[1]].getStatus()
+        == Cell.Status.CLEAN) { // check if coords given match a CLEAN cell.
       remainingBarriers--;
       grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
     } else {
@@ -240,7 +249,7 @@ public class Game {
         vessel[0], vessel[1], collectedOil);
   }
 
-  // TODO: implement oil-shore collision
+  /** Moves appropiate OIL cells along the Grid.Direction given in grid object. */
   private void updateOilCells() {
     int[] oldCoords = new int[2];
     int[] newCoords = new int[2];
@@ -274,33 +283,21 @@ public class Game {
           if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.CLEAN) {
             System.out.println("Clean @ " + j + " " + i);
 
-            cleanCoords[checkers] = Arrays.copyOf(oldCoords, 2);
-            oilCoords[checkers] = Arrays.copyOf(newCoords, 2);
+            cleanCoords[checkers] = Arrays.copyOf(oldCoords, 2); // store value in cleanCoords
+            oilCoords[checkers] = Arrays.copyOf(newCoords, 2); // store value in oilCoords
             checkers++;
           }
         }
       }
     }
     // #TODO: This snippet should just reuse generate from Grid class
-    for (int i = 0; i < checkers; i++) {
-      // System.out.println(i + "clean: " + cleanCoords[i][1] + " " + cleanCoords[i][0]);
-      // System.out.println(i + "oil: " + oilCoords[i][1] + " " + oilCoords[i][0]);
+    for (int i = 0; i < checkers; i++) { // loops over board placing OIL and CLEAN cells.
       grid.setGrid(cleanCoords[i][1], cleanCoords[i][0], Cell.Status.CLEAN);
       grid.setGrid(oilCoords[i][1], oilCoords[i][0], Cell.Status.OIL);
     }
-    for (int i = 0; i < chess; i++) {
-      // System.out.println(i + "clean: " + cleanCoords[i][1] + " " + cleanCoords[i][0]);
-      // System.out.println(i + "oil: " + oilCoords[i][1] + " " + oilCoords[i][0]);
+    for (int i = 0; i < chess; i++) { // loops over board placing OILEDSHORE cells.
       grid.setGrid(oiledShoords[i][1], oiledShoords[i][0], Cell.Status.OILEDSHORE);
     }
-
-    // grid.setGrid(oldCoords[1], oldCoords[0], Cell.Status.CLEAN);
-    // grid.setGrid(newCoords[1], newCoords[0], Cell.Status.OIL);
-    // check if cell is oil
-    // check if neighbor is out of bounds
-    // check if neighbor is obstacle
-    // check if neighbor is clean
-    // move original oil cell to new cell
   }
 
   private Grid.Direction updateCurrent(Grid.Direction dir) {
