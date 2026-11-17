@@ -47,8 +47,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-      "Vessel at (%d,%d), oil collected: %d",
-      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
+        "Vessel at (%d,%d), oil collected: %d",
+        grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -74,19 +74,49 @@ public class Game {
 
   private void placeBarrier() {
     int[] barrierCoord = new int[2];
-    System.out.print("Barrier row: ");
-    barrierCoord[0] = in.nextInt();
-    in.nextLine();
+    boolean f = true;
+    boolean g = true;
+    int row = 0;
+    int col;
 
-    System.out.print("Barrier col: ");
-    barrierCoord[1] = in.nextInt();
-    in.nextLine();
+    while (f) {
+      System.out.println("Barrier row: ");
+      if (in.hasNextInt()) {
+        row = in.nextInt();
+        if (row < grid.getGrid().length && row >= 0) {
+          barrierCoord[0] = row;
+          f = false;
+          in.nextLine();
+        } else {
+          System.err.println(
+              "Please choose an appropiate integer: 0-" + (grid.getGrid().length - 1));
+        }
+      } else {
+        in.nextLine();
+      }
+    }
+    while (g) {
+      System.out.println("Barrier col: ");
+      if (in.hasNextInt()) {
+        col = in.nextInt();
+        if (col < grid.getGrid()[0].length && row >= 0) {
+          barrierCoord[1] = col;
+          g = false;
+          in.nextLine();
+        } else {
+          System.err.println(
+              "Please choose an appropiate integer 0-" + (grid.getGrid()[0].length - 1));
+        }
+      } else {
+        in.nextLine();
+      }
+    }
+
     if (grid.getGrid()[barrierCoord[0]][barrierCoord[1]].getStatus() == Cell.Status.CLEAN) {
-
       remainingBarriers--;
       grid.setGrid(barrierCoord[0], barrierCoord[1], Cell.Status.BARRIER);
     } else {
-      System.out.println("BARRIER can only be placed in CLEAN cell.\nTry again:");
+      System.err.println("BARRIER can only be placed in CLEAN cell.\nTry again:");
       placeBarrier();
     }
   }
@@ -108,7 +138,7 @@ public class Game {
       if (grid.isObstacle(cand)) {
         Cell.Status status = grid.getGrid()[cand[1]][cand[0]].getStatus();
         System.out.printf(
-          "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
+            "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
         break;
       }
 
@@ -206,8 +236,8 @@ public class Game {
 
     int[] vessel = grid.getVesselCoords();
     System.out.printf(
-      "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
-      vessel[0], vessel[1], collectedOil);
+        "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
+        vessel[0], vessel[1], collectedOil);
   }
 
   // TODO: implement oil-shore collision
@@ -229,14 +259,14 @@ public class Game {
             == Cell.Status.OIL) { // check if cell is oil.
 
           newCoords =
-            grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
+              grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
           if (newCoords == null) {
             System.out.println("Null @ " + j + " " + i);
             continue;
           }
           if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.SHORE) {
             oiledShoords[chess] =
-              Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
+                Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
             chess++;
             remainingOil--;
           }
