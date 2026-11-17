@@ -2,7 +2,7 @@
  * Authors:
  * N. Elkhatali, 83938
  * S. Stefanovich, 83898
-*/
+ */
 
 import java.util.Random;
 
@@ -28,7 +28,7 @@ public class Grid {
   private final int N_ROCKS;
 
   // Mutable fields
-  private Cell[][] array;
+  private Cell[][] grid;
   private int[] vesselCoords;
 
   /**
@@ -55,16 +55,18 @@ public class Grid {
     this.N_ROCKS = nRocks;
 
     // Sets field via helper methods.
-    array = generateClean(rows, cols);
-    generate(oilCoords, Cell.Status.OIL);
-    generate(shoreCoords, Cell.Status.SHORE);
-    generate(vesselCoords, Cell.Status.VESSEL);
-    generateRandom(N_ROCKS, Cell.Status.CLEAN, Cell.Status.ROCK);
+    grid = initCellClean(rows, cols);
+    setCell(oilCoords, Cell.Status.OIL);
+    setCell(shoreCoords, Cell.Status.SHORE);
+    setCell(vesselCoords[0], vesselCoords[1], Cell.Status.VESSEL);
+    setCellRandom(N_ROCKS, Cell.Status.CLEAN, Cell.Status.ROCK);
   }
 
   // Helper methods for constructor.
-
-  private Cell[][] generateClean(int rows, int cols) {
+  /**
+    * Instantiate Cell objects in array.
+    */
+  private Cell[][] initCellClean(int rows, int cols) {
     Cell[][] array = new Cell[rows][cols];
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
@@ -74,28 +76,40 @@ public class Grid {
     return array;
   }
 
-  private void generate(int[][] coords, Cell.Status status) {
-    for (int[] i : coords) {
-      generate(i, status);
-    }
-  }
-
-  private void generate(int[] coords, Cell.Status status) {
-    setCell(coords[0], coords[1], status);
-  }
-
-  private Cell[][] generateRandom(int amount, Cell.Status targetStatus, Cell.Status status) {
+  /**
+    * Set number of given cell status at random coordinates.
+    * @param amount amount of cells to set.
+    * @param targetStatus status of eligible cells.
+    * @param status status to set.
+    */
+  private Cell[][] setCellRandom(int amount, Cell.Status targetStatus, Cell.Status status) {
     Random random = new Random();
     int i = 0;
     while (i < amount) {
       int r = random.nextInt(ROWS);
       int c = random.nextInt(COLS);
-      if (array[r][c].getStatus() == targetStatus) {
-        array[r][c] = new Cell(status);
+      if (grid[r][c].getStatus() == targetStatus) {
+        grid[r][c] = new Cell(status);
         i++;
       }
     }
-    return array;
+    return grid;
+  }
+
+  /**
+    * Set Cell object to given status at given coordinates.
+    */
+  public void setCell(int x, int y, Cell.Status status) {
+    grid[y][x].setStatus(status);
+  }
+
+  /**
+    * Overloaded setter method for array of coordinates.
+    */
+  private void setCell(int[][] coords, Cell.Status status) {
+    for (int[] i : coords) {
+      setCell(i[0], i[1], status);
+    }
   }
 
   /**
@@ -158,27 +172,27 @@ public class Grid {
       s += String.format("%2d", r);
       // Cells one by one.
       for (int c = 0; c < COLS; c++) {
-        switch (array[r][c].getStatus()) {
+        switch (grid[r][c].getStatus()) {
           case Cell.Status.CLEAN:
-            s += String.format(BLUE_BACKGROUND + "%3s" + RESET, array[r][c]);
+            s += String.format(BLUE_BACKGROUND + "%3s" + RESET, grid[r][c]);
             break;
           case Cell.Status.OIL:
-            s += String.format(BLACK_BACKGROUND + "%3s" + RESET, array[r][c]);
+            s += String.format(BLACK_BACKGROUND + "%3s" + RESET, grid[r][c]);
             break;
           case Cell.Status.SHORE:
-            s += String.format(GREEN_BACKGROUND + BLACK + "%3s" + RESET, array[r][c]);
+            s += String.format(GREEN_BACKGROUND + BLACK + "%3s" + RESET, grid[r][c]);
             break;
           case Cell.Status.BARRIER:
-            s += String.format(RED_BACKGROUND + BLACK + "%3s" + RESET, array[r][c]);
+            s += String.format(RED_BACKGROUND + BLACK + "%3s" + RESET, grid[r][c]);
             break;
           case Cell.Status.VESSEL:
-            s += String.format(PURPLE_BACKGROUND + "%3s" + RESET, array[r][c]);
+            s += String.format(PURPLE_BACKGROUND + "%3s" + RESET, grid[r][c]);
             break;
           case Cell.Status.ROCK:
-            s += String.format(YELLOW_BACKGROUND + "%3s" + RESET, array[r][c]);
+            s += String.format(YELLOW_BACKGROUND + "%3s" + RESET, grid[r][c]);
             break;
           case Cell.Status.OILEDSHORE:
-            s += String.format("%3s", array[r][c]);
+            s += String.format("%3s", grid[r][c]);
             break;
         }
       }
@@ -188,16 +202,18 @@ public class Grid {
     return s;
   }
 
+  /**
+    * Get Cell object at given coordinates.
+    */
   public Cell getCell(int x, int y) {
-    return array[y][x];
+    return grid[y][x];
   }
 
-  public void setCell(int x, int y, Cell.Status status) {
-    array[y][x].setStatus(status);
-  }
-
+  /**
+    * Get grid.
+    */
   public Cell[][] getGrid() {
-    return array;
+    return grid;
   }
 
   /**
@@ -210,15 +226,12 @@ public class Grid {
     */
   public static Direction relativeTurn(Direction initDir, int relDir) {
     int enumLength = Direction.values().length;
-    int newDirIdx = initDir.ordinal() + relDir;
 
-    // Handle turning left from north.
-    if (newDirIdx == -1) {
-      newDirIdx += enumLength;
-    }
-
-    // Handle turning right from west.
-    newDirIdx %= enumLength;
+    /*
+     * Calculating new index using the following:
+     * (initial index + relative direction (-1/1) + amount of directions) % amount of directions.
+     */
+    int newDirIdx = (initDir.ordinal() + relDir + enumLength) % enumLength;
 
     return Direction.values()[newDirIdx];
   }

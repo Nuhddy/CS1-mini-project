@@ -2,7 +2,6 @@
  * Authors:
  * N. Elkhatali, 83938
  * S. Stefanovich, 83898
- *
  */
 
 /**
