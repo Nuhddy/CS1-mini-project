@@ -47,8 +47,8 @@ public class Game {
     System.out.printf("Barriers left: %d", remainingBarriers);
     System.out.print("   ");
     System.out.printf(
-        "Vessel at (%d,%d), oil collected: %d",
-        grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
+      "Vessel at (%d,%d), oil collected: %d",
+      grid.getVesselCoords()[0], grid.getVesselCoords()[1], collectedOil);
     System.out.println();
   }
 
@@ -91,12 +91,67 @@ public class Game {
     }
   }
 
-  private void sailVessel() {
-    Grid.Direction dir = null;
-    int dist = 0;
+  private int moveVessel(Grid.Direction dir, int dist) {
+    int[] vessel = grid.getVesselCoords();
     int collectedOil = 0;
 
+    for (int i = 0; i < dist; i++) {
+      int[] cand = grid.getNeighborCoords(vessel, dir);
+
+      // if candidate is out of bounds
+      if (cand == null) {
+        System.out.printf("Sailed %d of %d field(s) to stay within bounds.\n", i, dist);
+        break;
+      }
+
+      // if candidate is obstacle
+      if (grid.isObstacle(cand)) {
+        Cell.Status status = grid.getGrid()[cand[1]][cand[0]].getStatus();
+        System.out.printf(
+          "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
+        break;
+      }
+
+      // if candidate is oil
+      if (grid.getGrid()[cand[1]][cand[0]].getStatus() == Cell.Status.OIL) {
+        collectedOil++;
+      }
+
+      // update state
+      grid.moveVessel(vessel, cand);
+      vessel = Arrays.copyOf(cand, 2);
+    }
+
+    return collectedOil;
+  }
+
+  private int skimOil() {
+    int[] vessel = grid.getVesselCoords();
+    int collectedOil = 0;
+
+    Grid.Direction[] dirs = Grid.Direction.values();
+    for (int i = 0; i < dirs.length; i++) {
+      int[] cand = grid.getNeighborCoords(vessel, dirs[i]);
+
+      // if candidate is out of bounds
+      if (cand == null) {
+        continue;
+      }
+
+      // if candidate is oil
+      if (grid.getGrid()[cand[1]][cand[0]].getStatus() == Cell.Status.OIL) {
+        // update state
+        grid.setGrid(cand[1], cand[0], Cell.Status.CLEAN);
+        collectedOil++;
+      }
+    }
+
+    return collectedOil;
+  }
+
+  private void sailVessel() {
     // choose direction
+    Grid.Direction dir = null;
     boolean f = true;
     while (f) {
       System.out.print("Direction (N, E, S, W): ");
@@ -124,6 +179,7 @@ public class Game {
     }
 
     // choose distance
+    int dist = 0;
     f = true;
     while (f) {
       System.out.print("Number of cells: ");
@@ -141,61 +197,17 @@ public class Game {
       }
     }
 
-    // move vessel
-    int[] vessel = grid.getVesselCoords();
-
-    for (int i = 0; i < dist; i++) {
-      int[] cand = grid.getNeighborCoords(vessel, dir);
-
-      // if candidate is out of bounds
-      if (cand == null) {
-        System.out.printf("Sailed %d of %d field(s) to stay within bounds.\n", i, dist);
-        break;
-      }
-
-      // if candidate is obstacle
-      if (grid.isObstacle(cand)) {
-        Cell.Status status = grid.getGrid()[cand[1]][cand[0]].getStatus();
-        System.out.printf(
-            "Sailed %d of %d field(s) to avoid %s.\n", i, dist, status.name().toLowerCase());
-        break;
-      }
-
-      // if candidate is oil
-      if (grid.getGrid()[cand[1]][cand[0]].getStatus() == Cell.Status.OIL) {
-        collectedOil++;
-      }
-
-      // update state
-      grid.moveVessel(vessel, cand);
-      vessel = Arrays.copyOf(cand, 2);
-    }
-
-    // skim oil
-    vessel = grid.getVesselCoords();
-    Grid.Direction[] dirs = Grid.Direction.values();
-
-    for (int i = 0; i < dirs.length; i++) {
-      int[] cand = grid.getNeighborCoords(vessel, dirs[i]);
-
-      // if candidate is out of bounds
-      if (cand == null) {
-        continue;
-      }
-
-      // if candidate is oil
-      if (grid.getGrid()[cand[1]][cand[0]].getStatus() == Cell.Status.OIL) {
-        // update state
-        grid.setGrid(cand[1], cand[0], Cell.Status.CLEAN);
-        collectedOil++;
-      }
-    }
+    int collectedOil = 0;
+    collectedOil += moveVessel(dir, dist);
+    collectedOil += skimOil();
 
     this.collectedOil += collectedOil;
     this.remainingOil -= collectedOil;
+
+    int[] vessel = grid.getVesselCoords();
     System.out.printf(
-        "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
-        vessel[0], vessel[1], collectedOil);
+      "The vessel is at (%d,%d) and skimmed %d oil cell(s).\n",
+      vessel[0], vessel[1], collectedOil);
   }
 
   // TODO: implement oil-shore collision
@@ -217,14 +229,14 @@ public class Game {
             == Cell.Status.OIL) { // check if cell is oil.
 
           newCoords =
-              grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
+            grid.getNeighborCoords(oldCoords, current); // get neighbor in CURRENT direction
           if (newCoords == null) {
             System.out.println("Null @ " + j + " " + i);
             continue;
           }
           if (grid.getGrid()[newCoords[1]][newCoords[0]].getStatus() == Cell.Status.SHORE) {
             oiledShoords[chess] =
-                Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
+              Arrays.copyOf(newCoords, 2); // there is a more efficient way of doing this.
             chess++;
             remainingOil--;
           }
